@@ -1,0 +1,116 @@
+#Importing the pandas library
+
+import pandas as pd
+
+# The file path where Healthcare Data is saved.
+file_path = r'C:\Users\Bhaskar\Documents\MSc-DA_Notes\Module1\Heathcare.xlsx'
+
+# Loading data into a pandas DataFrame
+df = pd.read_excel(file_path)
+
+# Droping duplicates, if any
+df = df.drop_duplicates()
+
+# Handling missing values
+df = df.dropna()
+
+# Selecting relevant columns for analysis
+selected_columns = ['Gender', 'Weight', 'Height','BMI','HeartAttack','Stroke','Diabetes',
+                   'HBP','HBldChol','Smoking','Exercise','Stress','OccupationType','Overweight','healthRisk']
+df_selected = df[selected_columns]
+
+# Renaming columns
+df_selected = df_selected.rename(columns={'HeartAttack': 'Suffered HeartAttack', 'Stroke': 'Suffered Stroke',
+                                         'Diabetes':'Has Diabetes','HBP':'HighBP','HBldChol':'HighBloodCholestrol',
+                                         'Stress':'Stresslevel'})
+df_selected.head()
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Preprocessing, Visualizing and Cleaning the Dataset
+
+#Visualizing the Data (Pair Plot)
+
+from sklearn.impute import KNNImputer
+
+knn_imputer = KNNImputer(n_neighbors=2)
+X_imputed_knn = knn_imputer.fit_transform(X)
+
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+sns.pairplot(df_selected, hue='healthRisk')
+plt.show()
+
+#Visualizing the Data (Correlational Heatmaps)
+
+numeric_data = df_selected.select_dtypes(include='number')
+correlation_matrix = numeric_data.corr()
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('Correlation Heatmap')
+plt.show()
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Model Evaluation and Performance Discussion
+
+# df_selected is our DataFrame
+
+# Step 2: Feature and Target Extraction
+X = df_selected.drop('healthRisk', axis=1)  # Features
+y = df_selected['healthRisk']  # Target variable
+
+# Step 3: One-Hot Encoding for Categorical Variables
+X = pd.get_dummies(X, drop_first=True)
+
+# Step 4: Train-Test Split
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 5: Data Scaling (Optional)
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Step 6: Model Initialization
+from sklearn.svm import SVC
+
+# Using a linear kernel for Linear SVM
+linear_svm = SVC(kernel='linear', decision_function_shape='ovr', random_state=42)
+
+# Step 7: Model Training
+linear_svm.fit(X_train_scaled, y_train)
+
+# Step 8: Model Prediction
+y_pred = linear_svm.predict(X_test_scaled)
+
+# Step 9: Model Evaluation
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Result Analysis
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, auc
+import matplotlib.pyplot as plt
+# Assuming y_test and y_pred are available
+# Calculate Accuracy, Precision, Recall, F1-Score
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# Analyze Feature Importance (for linear SVM)
+if linear_svm.kernel == 'linear':
+    feature_importance = abs(linear_svm.coef_[0])
+    print("Feature Importance:\n", feature_importance)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
