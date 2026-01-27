@@ -29,3 +29,6 @@ This project analyzes a **healthcare dataset** (with attributes like age, BMI, b
  | **KNN Imputer**          | Filling missing values in healthcare data.                                | Reflects my **data quality** focus at Sakon.           |
  | **Pair Plots/Heatmaps**  | Visualizing relationships between variables (e.g., BMI vs. weight).       | Aligns with my **Power BI dashboard** experience.      |
 
+---
+For a visual walkthrough of the project outputs, check out the OutputSnaps folder—I’ve compiled chronologically arranged snapshots of all key visualizations and results for easy reference! 📸📂
+---
